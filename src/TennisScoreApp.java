@@ -34,13 +34,17 @@ public class TennisScoreApp {
             int games2 = parseScore(form.get("games2"));
 
             String result;
-            if (games1 == games2) {
-                result = "The set is tied at " + games1 + "-" + games2 + ".";
-            } else if (games1 > games2) {
-                result = player1 + " is leading " + games1 + "-" + games2 + ".";
-            } else {
-                result = player2 + " is leading " + games2 + "-" + games1 + ".";
-            }
+            if (games1 == 6 && games1 - games2 >= 2) {
+    result = player1 + " has won the set " + games1 + "-" + games2 + "!";
+} else if (games2 == 6 && games2 - games1 >= 2) {
+    result = player2 + " has won the set " + games2 + "-" + games1 + "!";
+} else if (games1 == games2) {
+    result = "The set is tied at " + games1 + "-" + games2 + ".";
+} else if (games1 > games2) {
+    result = player1 + " is leading " + games1 + "-" + games2 + ".";
+} else {
+    result = player2 + " is leading " + games2 + "-" + games1 + ".";
+}
 
             sendHtml(exchange, page("Tennis Score Tracker", result));
             return;
