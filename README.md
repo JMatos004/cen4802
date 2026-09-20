@@ -23,3 +23,28 @@ cen4802/
     └── main/
         └── java/
             └── TennisScoreApp.java
+
+
+
+## Unit Testing
+
+Automated unit testing is implemented using JUnit 5. The tests verify multiple input scenarios in the application's score-processing logic, including normal scores, negative scores, scores above the allowed maximum, and invalid input.
+
+Test source files are located in:
+
+```text
+src/test/java/TennisScoreAppTest.java
+
+```
+
+Run the unit tests with:
+
+```text
+./apache-maven-3.9.16/bin/mvn test
+```
+
+Run the complete automated build, including the unit tests, with:
+
+```text
+./apache-maven-3.9.16/bin/mvn clean package
+```

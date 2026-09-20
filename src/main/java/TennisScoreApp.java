@@ -53,7 +53,7 @@ public class TennisScoreApp {
         exchange.sendResponseHeaders(405, -1);
     }
 
-    private static int parseScore(String value) {
+    static int parseScore(String value) {
         try {
             int score = Integer.parseInt(value);
             return Math.max(0, Math.min(score, 6));
@@ -92,7 +92,7 @@ public class TennisScoreApp {
             </head>
             <body>
                 <h1>🎾 Tennis Score Tracker</h1>
-                <p>Enter the current game score to see who is leading the match!</p>
+                <p>Enter the current game score to see who is leading the match! Maven rebuild verified.</p>
                 <form method="post">
                     <input name="player1" placeholder="Player 1" required>
                     <input name="games1" type="number" min="0" max="6" value="0" required>
