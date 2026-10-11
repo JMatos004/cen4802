@@ -99,6 +99,7 @@ public class TennisScoreApp {
                     <input name="player2" placeholder="Player 2" required>
                     <input name="games2" type="number" min="0" max="6" value="0" required>
                     <button type="submit">Check Score</button>
+                    <button type="button" onclick="window.location.href='/'">Reset Scores</button>
                 </form>
                 %s
             </body>
