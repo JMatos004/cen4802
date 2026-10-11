@@ -33,3 +33,12 @@ jobs:
     - name: Build Docker image
       run: docker build -t tennis-score-tracker:latest .
 
+    - name: Save Docker image
+      run: docker save tennis-score-tracker:latest -o tennis-score-tracker.tar
+
+    - name: Upload Docker image
+      uses: actions/upload-artifact@v4
+      with:
+        name: tennis-score-tracker-image
+        path: tennis-score-tracker.tar
+
