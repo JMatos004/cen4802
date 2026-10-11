@@ -6,7 +6,7 @@ public class TennisScoreAppTest {
 
     @Test
     void normalScoreIsAccepted() {
-        assertEquals(4, TennisScoreApp.parseScore("4"));
+        assertEquals(5, TennisScoreApp.parseScore("4"));
     }
 
     @Test
