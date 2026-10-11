@@ -20,7 +20,7 @@ public class TennisScoreApp {
 
     private static void handleRequest(HttpExchange exchange) throws IOException {
         if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-            sendHtml(exchange, page("Tennis Score Tracker", ""));
+            sendHtml(exchange, page("Tennis Score Tracker", "", "", "", 0, 0));
             return;
         }
 
@@ -46,7 +46,7 @@ public class TennisScoreApp {
     result = player2 + " is leading " + games2 + "-" + games1 + ".";
 }
 
-            sendHtml(exchange, page("Tennis Score Tracker", result));
+            sendHtml(exchange, page("Tennis Score Tracker", result, player1, player2, games1, games2));
             return;
         }
 
@@ -76,7 +76,9 @@ public class TennisScoreApp {
         return form;
     }
 
-    private static String page(String title, String result) {
+    private static String page(String title, String result,
+                           String player1, String player2,
+                           int games1, int games2) {
         return """
             <!DOCTYPE html>
             <html>
@@ -94,17 +96,18 @@ public class TennisScoreApp {
                 <h1>🎾 Tennis Score Tracker</h1>
                 <p>Enter the current game score to track the match! CI update verified.</p>
                 <form method="post">
-                    <input name="player1" placeholder="Player 1" required>
-                    <input name="games1" type="number" min="0" max="6" value="0" required>
-                    <input name="player2" placeholder="Player 2" required>
-                    <input name="games2" type="number" min="0" max="6" value="0" required>
+                    <input name="player1" placeholder="Player 1" value="%s" required>
+                    <input name="games1" type="number" min="0" max="6" value="%d" required>
+                    <input name="player2" placeholder="Player 2" value="%s" required>
+                    <input name="games2" type="number" min="0" max="6" value="%d" required>
                     <button type="submit">Check Score</button>
                     <button type="button" onclick="window.location.href='/'">Reset Scores</button>
                 </form>
                 %s
             </body>
             </html>
-            """.formatted(title, result.isBlank() ? "" : "<div class='result'><strong>" + result + "</strong></div>");
+            """.formatted(title, player1, games1, player2, games2,
+        result.isBlank() ? "" : "<div class='result'><strong>" + result + "</strong></div>");
     }
 
     private static void sendHtml(HttpExchange exchange, String html) throws IOException {
