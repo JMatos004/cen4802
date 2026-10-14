@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tennis-score-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tennis-score-tracker
+  template:
+    metadata:
+      labels:
+        app: tennis-score-tracker
+    spec:
+      containers:
+        - name: tennis-score-tracker
+          image: tennis-score-tracker:2.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
