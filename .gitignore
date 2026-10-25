@@ -5,3 +5,9 @@ out/
 target/
 apache-maven-3.9.16/
 apache-maven-3.9.16-bin.tar.gz
+
+# Generated application logs
+*.log
+
+# Local temporary files
+untitled folder/
