@@ -11,3 +11,8 @@ apache-maven-3.9.16-bin.tar.gz
 
 # Local temporary files
 untitled folder/
+
+# Generated profiling recordings and event exports
+profiling/*.jfr
+profiling/allocations.txt
+profiling/gc.txt

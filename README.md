@@ -201,3 +201,82 @@ and zero restarts. This supports continued container operation but does not
 prove that all aspects of application health are normal.
 
 Screenshots and further analysis are included in the accompanying report.
+
+## Assignment 9: Software Profiling
+
+The existing Tennis Score Tracker was profiled locally on macOS using
+Temurin JDK 25.0.2 and Java Flight Recorder (JFR). The Docker container
+used previously runs a JRE without jcmd, so the existing application JAR
+was run locally on port 8080 for this investigation.
+
+### Reproducing the profiling workflow
+
+Build with Maven, then start the application:
+
+```bash
+mvn clean package
+java -jar target/tennis-score-tracker-1.0.jar
+```
+
+In a second terminal, locate the application process:
+
+```bash
+"$(/usr/libexec/java_home)/bin/jcmd" -l
+```
+
+Replace APP_PID below with the PID of the application JAR:
+
+```bash
+"$(/usr/libexec/java_home)/bin/jcmd" APP_PID JFR.start name=tennis-profile settings=profile
+"$(/usr/libexec/java_home)/bin/jcmd" APP_PID JFR.check
+bash profiling/workload.sh 60
+"$(/usr/libexec/java_home)/bin/jcmd" APP_PID JFR.stop name=tennis-profile filename="$PWD/profiling/tennis-profile.jfr"
+"$(/usr/libexec/java_home)/bin/jfr" summary profiling/tennis-profile.jfr
+```
+
+The workload sends sequential POST requests with John at 5 games and
+Luke at 3 games. It exercises form parsing, score evaluation, HTML
+generation, response encoding, and associated logging. Its count records
+successful HTTP responses; it does not independently validate each body.
+
+Inspect allocation call stacks and garbage collection:
+
+```bash
+"$(/usr/libexec/java_home)/bin/jfr" print --events jdk.ObjectAllocationSample --stack-depth 20 profiling/tennis-profile.jfr > profiling/allocations.txt
+"$(/usr/libexec/java_home)/bin/jfr" print --events jdk.GarbageCollection,jdk.GCHeapSummary profiling/tennis-profile.jfr > profiling/gc.txt
+```
+
+### Results and investigation
+
+The workload completed 8,048 successful HTTP requests in approximately
+60 seconds. The recording lasted 570 seconds, including time outside
+the workload. It contained 277 Java execution samples, 1,198 allocation
+samples, and 10 garbage collection events.
+
+Allocation stacks linked byte arrays to TennisScoreApp.page() at line
+173 through String.formatted(), and to sendHtml() at line 182 through
+UTF-8 encoding. Allocation sample weights estimate the allocation volume
+represented by each sample; they are not individual object sizes.
+
+As a follow-up investigation, GC and heap events were examined. GC ID 3
+reduced used heap from 76.7 MB to 4.4 MB, approximately 72.3 MB reclaimed,
+with a 1.80 ms pause. This is consistent with substantial temporary
+allocation, but does not identify the reclaimed objects or prove the
+absence of a memory leak.
+
+### Potential improvement
+
+Consider replacing general-purpose String.formatted() page construction
+with a pre-sized StringBuilder to reduce formatting-related allocations.
+This is a proposed optimization, not an implemented or proven benefit.
+UTF-8 response encoding would still be necessary.
+
+Validate a candidate change with repeated, warmed-up runs using the same
+JDK, inputs, request count, and concurrency. Compare estimated allocated
+bytes per request, GC pause totals, and separately measured response
+latency while confirming equivalent response content. The sequential curl
+workload also includes client process startup overhead, so its throughput
+alone does not establish server capacity.
+
+The accompanying evidence report contains screenshots and analysis.
+Raw recordings and generated event exports are excluded from Git.
