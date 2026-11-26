@@ -25,7 +25,7 @@ provider "docker" {
 }
 
 data "docker_image" "tennis" {
-  name = "tennis-score-tracker:monitoring"
+  name = "tennis-score-tracker:final-v1"
 }
 
 resource "docker_network" "tennis" {
