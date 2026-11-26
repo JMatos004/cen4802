@@ -41,4 +41,24 @@ jobs:
       with:
         name: tennis-score-tracker-image
         path: tennis-score-tracker.tar
+    - name: Install ApacheBench
+      run: sudo apt-get update && sudo apt-get install -y apache2-utils
 
+    - name: Start application container
+      run: |
+        docker run -d --name tennis-ci-test -p 127.0.0.1:8080:8080 tennis-score-tracker:latest
+        curl --fail --retry 15 --retry-connrefused --retry-delay 2 http://localhost:8080/
+
+    - name: Run automated performance test
+      run: bash scripts/performance-test.sh http://localhost:8080/
+
+    - name: Upload performance results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-test-results
+        path: performance-results.txt
+
+    - name: Stop test container
+      if: always()
+      run: docker rm -f tennis-ci-test || true
