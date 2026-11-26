@@ -47,7 +47,7 @@ jobs:
     - name: Start application container
       run: |
         docker run -d --name tennis-ci-test -p 127.0.0.1:8080:8080 tennis-score-tracker:latest
-        curl --fail --retry 15 --retry-connrefused --retry-delay 2 http://localhost:8080/
+        curl --fail --retry 15 --retry-all-errors --retry-connrefused --retry-delay 2 http://localhost:8080/
 
     - name: Run automated performance test
       run: bash scripts/performance-test.sh http://localhost:8080/
